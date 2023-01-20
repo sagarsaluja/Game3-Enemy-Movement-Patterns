@@ -14,40 +14,37 @@ class Enemy {
     this.image = image;
     this.frameWidth = image.width / 6;
     this.frameHeight = image.height;
-    this.x = Math.random() * (canvas.width - this.frameWidth); //random number between 0 , canvas_width
+    this.x = Math.random() * canvas.width; //random number between 0 , canvas_width
     this.y = Math.random() * (canvas.height - this.frameHeight);
-    this.speedX = -1 * Math.random() * 5;
-    this.speedY = (-1 * Math.random() + Math.random()) * 5;
-    this.currentEnemyAnimationFrameX = 0;
-    this.currentEnemyAnimationFrameY = 0;
-    this.flapSpeed = Math.floor(Math.random() * 20 + 1);
-    this.angle = 7 * Math.random();
-    this.angleSpeed = Math.random();
-    this.curve = 7 * Math.random();
-    //add sine wave to y
+    this.speedX = -3 * Math.random();
+    this.speedY = (-1 * Math.random() + Math.random()) * 3;
+    this.currentAnimationFrameX = 0;
+    this.currentAnimationFrameY = 0;
+    this.flapSpeed = Math.floor(Math.random() * 5 + 1);
+    this.gameFrame = 0;
+    this.angle = -Math.PI * Math.random() + Math.PI * Math.random();
+    this.angleSpeed = 0.1 * Math.random();
   }
   update() {
-    if (GAME_FRAME % this.flapSpeed === 0) {
-      if (this.currentEnemyAnimationFrameX >= this.frameWidth * 5) {
-        this.currentEnemyAnimationFrameX = 0;
+    this.gameFrame++;
+    if (this.gameFrame % this.flapSpeed === 0) {
+      if (this.currentAnimationFrameX >= this.frameWidth * 5) {
+        this.currentAnimationFrameX = 0;
       } else {
-        this.currentEnemyAnimationFrameX += this.frameWidth;
+        this.currentAnimationFrameX += this.frameWidth;
       }
-
-      if (this.x <= -this.frameWidth) this.x = canvas.width;
-      this.x += this.speedX;
-      if (this.y <= 0 || this.y + this.frameHeight / 3 >= canvas.height)
-        this.speedY *= -1;
-
-      this.y += this.curve * Math.sin(this.angle);
-      this.angle += this.angleSpeed;
     }
+
+    if (this.x <= -this.frameWidth) this.x = canvas.width;
+    this.x += this.speedX;
+    this.y += Math.sin(this.angle);
+    this.angle += this.angleSpeed;
   }
   draw() {
     context.drawImage(
       this.image,
-      this.currentEnemyAnimationFrameX,
-      this.currentEnemyAnimationFrameY,
+      this.currentAnimationFrameX,
+      this.currentAnimationFrameY,
       this.frameWidth,
       this.frameHeight,
       this.x,
@@ -59,7 +56,7 @@ class Enemy {
 }
 
 const enemiesArray = [];
-const numberOfEnemies = 10;
+const numberOfEnemies = 25;
 for (let i = 0; i < numberOfEnemies; i++) {
   enemiesArray.push(new Enemy(enemyImage1));
 }
@@ -70,8 +67,6 @@ const animate = () => {
     enemy.draw();
     enemy.update();
   });
-
-  GAME_FRAME++;
   requestAnimationFrame(animate);
 };
 animate();
